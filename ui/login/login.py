@@ -53,7 +53,7 @@ class Login_Window(QWidget):
         self.mininumbutton.clicked.connect(self.showMinimized)
         self.closebutton.clicked.connect(self.close)
 
-        
+
 
 
 
