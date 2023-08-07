@@ -1,6 +1,6 @@
 import os
 import sys
-
+import sqlite3
 import PySide6
 from PySide6.QtWidgets import QApplication, QWidget, QPushButton, QLabel, \
     QVBoxLayout, QHBoxLayout,QGridLayout,QLineEdit
@@ -73,6 +73,9 @@ class Login_Window(QWidget):
         self.register_button = QPushButton('注册',self)
         self.count_label.setAlignment(Qt.AlignVCenter)
 
+        # 将密码输入框显示内容设置为掩码
+        self.password.setEchoMode(QLineEdit.Password)
+
         # 设置控件尺寸，外观
         self.login_button.setFixedSize(60,30)
         self.register_button.setFixedSize(60,30)
@@ -134,6 +137,9 @@ class Login_Window(QWidget):
         validator = QRegularExpressionValidator(regex, self)
         self.count.setValidator(validator)
 
+        # 登录按钮添加槽函数连接
+        self.login_button.clicked.connect(self.login_clicked)
+
 
 
     # 处理窗口拖拽
@@ -152,6 +158,58 @@ class Login_Window(QWidget):
     def paintEvent(self, event):
         painter = QPainter(self)
         painter.drawPixmap(0, 0, self.width(), self.height(), self.background_image)
+
+
+
+    def login_clicked(self):
+        """
+        登录按钮点击槽函数
+        :return:
+        """
+        # 连接数据库，比对输入的账号是否经过注册
+        dbname = "D:\\my_python_project\\music_project\\source\\database\\MMusic.db"
+        try:
+            con = sqlite3.connect(dbname)
+        except:
+            return "数据库连接失败"
+        if con:
+            cur = con.cursor()
+            # 查询输入的账号是否在数据库中注册过
+            COUNT = self.count.text()
+            try:
+                cur.execute("SELECT COUNT(*) FROM user WHERE COUNT=?;",(COUNT,))
+                result = cur.fetchone()
+                if result[0]:
+                    print("登录成功")
+            except:
+                print("未注册账号")
+
+
+            # try:
+            #     # 查询数据库是否已经存在表user
+            #     cur.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='user';")
+            #     result = cur.fetchone()
+            #     # 如果不存在则创建表user
+            #     if not result:
+            #         cur.execute('''CREATE TABLE  user
+            #         (ID INTEGER ,COUNT TEXT)''')
+            # except:
+            #     return '数据表创建失败'
+
+
+
+
+
+
+            # # 查询数据库中的用户数量
+            # cur.execute("SELECT COUNT(ID) FROM user;")
+            # result = cur.fetchone()
+            # count = self.count.text()
+            # information = (result[0],count)
+            # cur.execute("INSERT INTO user (ID, COUNT) VALUES (?, ?)",information)
+            # con.commit()
+            # con.close()
+
 
 
 
