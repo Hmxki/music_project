@@ -18,6 +18,9 @@ class Login_Window(QWidget):
         self.draggable = False
         self.press_pos = None
 
+        # 创建注册窗口对象
+        self.register_window = None
+
         ## 隐藏原有标题栏，自定义标题栏
         self.setWindowFlags(Qt.FramelessWindowHint)
 
@@ -46,8 +49,7 @@ class Login_Window(QWidget):
         self.title_bar_title.move(30,0)
         self.mininumbutton.move(340,0)
         self.closebutton.move(370,0)
-
-        image_path = "C:\\Users\\LENOVO\\Desktop\\myimage.jpg"
+        image_path = "./source/pic/myimage.jpg"
         self.background_image = QPixmap(image_path)
 
 
@@ -201,10 +203,6 @@ class Login_Window(QWidget):
             #     return '数据表创建失败'
 
 
-
-
-
-
             # # 查询数据库中的用户数量
             # cur.execute("SELECT COUNT(ID) FROM user;")
             # result = cur.fetchone()
@@ -215,9 +213,12 @@ class Login_Window(QWidget):
             # con.close()
 
     def register_clicked(self):
-        register_ = register()
-        register_.show()
+        self.register_window = register()
+        self.register_window.show()
+
+        #隐藏登录窗口
         self.hide()
+
 
 
 
