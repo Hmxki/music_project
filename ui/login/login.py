@@ -6,6 +6,7 @@ from PySide6.QtWidgets import QApplication, QWidget, QPushButton, QLabel, \
     QVBoxLayout, QHBoxLayout,QGridLayout,QLineEdit
 from PySide6.QtGui import QIcon, QPixmap, QFont, QPainter, QColor, QRegularExpressionValidator, QPalette
 from PySide6.QtCore import Qt, QRegularExpression
+from ui.register.register import register
 
 
 class Login_Window(QWidget):
@@ -140,6 +141,9 @@ class Login_Window(QWidget):
         # 登录按钮添加槽函数连接
         self.login_button.clicked.connect(self.login_clicked)
 
+        # 注册按钮添加槽函数连接
+        self.register_button.clicked.connect(self.register_clicked)
+
 
 
     # 处理窗口拖拽
@@ -209,6 +213,11 @@ class Login_Window(QWidget):
             # cur.execute("INSERT INTO user (ID, COUNT) VALUES (?, ?)",information)
             # con.commit()
             # con.close()
+
+    def register_clicked(self):
+        register_ = register()
+        register_.show()
+        self.hide()
 
 
 
