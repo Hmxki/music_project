@@ -3,11 +3,12 @@ import sys
 import sqlite3
 import PySide6
 from PySide6.QtWidgets import QApplication, QWidget, QPushButton, QLabel, \
-    QVBoxLayout, QHBoxLayout,QGridLayout,QLineEdit
+    QVBoxLayout, QHBoxLayout, QGridLayout, QLineEdit, QMessageBox
 from PySide6.QtGui import QIcon, QPixmap, QFont, QPainter, QColor, QRegularExpressionValidator, QPalette
 from PySide6.QtCore import Qt, QRegularExpression
+from ui.login.password_verify import check_password
 from ui.register.register import register
-
+from ui.main_widget.main_window import main_win
 
 class Login_Window(QWidget):
     def __init__(self):
@@ -20,6 +21,9 @@ class Login_Window(QWidget):
 
         # 创建注册窗口对象
         self.register_window = None
+
+        # 创建主窗口对象
+        self.main_window = main_win(self)
 
         ## 隐藏原有标题栏，自定义标题栏
         self.setWindowFlags(Qt.FramelessWindowHint)
@@ -186,31 +190,22 @@ class Login_Window(QWidget):
                 cur.execute("SELECT COUNT(*) FROM user WHERE COUNT=?;",(COUNT,))
                 result = cur.fetchone()
                 if result[0]:
-                    print("登录成功")
+                    # 账号存在，验证密码进行登录
+                    password = self.password.text()
+                    # 读取数据库中的密码
+                    stored_password_query = cur.execute("SELECT PASSWORD FROM user WHERE COUNT=?", (COUNT,))
+                    stored_password = stored_password_query.fetchone()[0]
+                    # 将数据库中加密的密码与输入的密码进行比较
+                    if check_password(password,stored_password):
+                        self.main_window.show()
+                        self.close()
+                    else:
+                        self.show_error_message('密码错误！')
+                else:
+                    self.show_error_message("账号不存在！")
             except:
                 print("未注册账号")
 
-
-            # try:
-            #     # 查询数据库是否已经存在表user
-            #     cur.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='user';")
-            #     result = cur.fetchone()
-            #     # 如果不存在则创建表user
-            #     if not result:
-            #         cur.execute('''CREATE TABLE  user
-            #         (ID INTEGER ,COUNT TEXT)''')
-            # except:
-            #     return '数据表创建失败'
-
-
-            # # 查询数据库中的用户数量
-            # cur.execute("SELECT COUNT(ID) FROM user;")
-            # result = cur.fetchone()
-            # count = self.count.text()
-            # information = (result[0],count)
-            # cur.execute("INSERT INTO user (ID, COUNT) VALUES (?, ?)",information)
-            # con.commit()
-            # con.close()
 
     def register_clicked(self):
         self.register_window = register(self)
@@ -222,4 +217,9 @@ class Login_Window(QWidget):
     def set_count_text(self,str):
         self.count.setText(str)
 
-
+    def show_error_message(self, message):
+        error_dialog = QMessageBox()
+        error_dialog.setIcon(QMessageBox.Critical)
+        error_dialog.setWindowTitle("错误")
+        error_dialog.setText(message)
+        error_dialog.exec()
