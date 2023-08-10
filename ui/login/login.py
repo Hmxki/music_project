@@ -213,13 +213,13 @@ class Login_Window(QWidget):
             # con.close()
 
     def register_clicked(self):
-        self.register_window = register()
+        self.register_window = register(self)
         self.register_window.show()
 
         #隐藏登录窗口
         self.hide()
 
-
-
+    def set_count_text(self,str):
+        self.count.setText(str)
 
 
